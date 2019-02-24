@@ -89,7 +89,8 @@ class ABCDataset(Dataset):
         data = self.convert_label(self.input_data[ind,:])
 
         # Convert multi-class label into binary encoding 
-        label = self.convert_label(self.labels[ind,:])
+        #label = self.convert_label(self.labels[ind,:])
+        label = torch.from_numpy(self.labels[ind,:])
         
         # Return the image and its label
         return (data, label)
