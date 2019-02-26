@@ -65,8 +65,9 @@ def toAbc(onehot,dictionary):
     abc=''.join(abc)
     return abc
 
-class ABCDataset(Dataset):
 
+class ABCDataset(Dataset):
+    
     def __init__(self,filename,chunksize=100):
         self.chunksize=chunksize
         self.dictionary=pickle.load(open("dictionary_new.pkl","rb"))
@@ -77,9 +78,9 @@ class ABCDataset(Dataset):
         #pdb.set_trace()
         self.input_data=self.createChunks(toNumLabel(self.data[:-1], self.dictionary))
         self.labels=self.createChunks(toNumLabel(self.data[1:], self.dictionary))
-
+        
     def __len__(self):
-
+        
         # Return the total number of data samples
         return len(self.input_data)
 
@@ -91,12 +92,11 @@ class ABCDataset(Dataset):
         label = torch.from_numpy(self.labels[ind,:])
         # Return the image and its label
         return (data, label)
-
+    
     def createChunks(self,label):
         chunkedData=label[:self.chunkNum*self.chunksize].reshape((self.chunkNum,self.chunksize))
         return chunkedData
 
-    
 
     def convert_label(self, label):
         """Convert the numerical label to n-hot encoding.
