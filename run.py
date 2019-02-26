@@ -7,7 +7,7 @@ import torch.nn.init as torch_init
 import torch.optim as optim
 import shutil
 import pickle
- 
+
 class LSTM(nn.Module):
     """ A basic LSTM model. 
     """
@@ -47,13 +47,17 @@ def validate(val_loader, model, criterion):
 
     # switch to evaluate mode
     model.eval()  
+    hidden=None
     for minibatch_count, (images, labels) in enumerate(val_loader, 0):
         images=images.permute(1,0,2)
         # Put the minibatch data in CUDA Tensors and run on the GPU if supported
         images, labels = images.to(computing_device), labels.to(computing_device)
         images=images.float()
-        
+       
         outputs,hidden = model(images,hidden)
+        hidden[0].detach_() 
+        hidden[1].detach_()
+        
         labels=labels.view(-1)
         loss = criterion(outputs, labels)
         
@@ -159,14 +163,16 @@ for epoch in range(num_epochs):
 
         # Perform the forward pass through the network and compute the loss
         outputs,hidden = model(images,hidden)
+        hidden[0].detach_() 
+        hidden[1].detach_()
 #         outputs.shape => batchSize * sequenceSize *dictionarySize
 #         labels.shape => batchSize * sequenceSize
         labels=labels.view(-1)
         loss = criterion(outputs,labels)
         
         # Automagically compute the gradients and backpropagate the loss through the network
-        loss.backward(retain_graph=True)
-
+        #loss.backward(retain_graph=True)
+        loss.backward()
         # Update the weights
         optimizer.step()
 
@@ -222,4 +228,4 @@ for epoch in range(num_epochs):
 print("Training complete after", epoch, "epochs")
 
 results = { "acc_train_list": acc_train_list, "acc_val_list": acc_val_list, "loss_train_list":loss_train_list,"loss_val_list":loss_val_list}
-pickle.dump( results, open( "results.p", "wb" ) )
+pickle.dump( results, open( "own_results_base.p", "wb" ) )
