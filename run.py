@@ -7,7 +7,7 @@ import torch.nn.init as torch_init
 import torch.optim as optim
 import shutil
 import pickle
-
+ 
 class LSTM(nn.Module):
     """ A basic LSTM model. 
     """
