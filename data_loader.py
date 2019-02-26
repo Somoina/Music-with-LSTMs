@@ -65,34 +65,36 @@ def toAbc(onehot,dictionary):
     abc=''.join(abc)
     return abc
 
-def createChunks(label):
-    chunkSize=100
-    chunkNum=int(len(label)/chunkSize)
-    chunkedData=label[:chunkNum*chunkSize].reshape((chunkNum,chunkSize))
-    return chunkedData
-
 class ABCDataset(Dataset):
-    
-    def __init__(self,filename):
+
+    def __init__(self,filename,chunksize=100):
+        self.chunksize=chunksize
         self.dictionary=pickle.load(open("dictionary_new.pkl","rb"))
         self.data=loadFiles(filename)
-        self.input_data=createChunks(toNumLabel(self.data[:-1], self.dictionary))
-        self.labels=createChunks(toNumLabel(self.data[1:], self.dictionary))
-        
+        self.chunkNum=int(len(self.data)/chunksize)+1
+        padNum=(100-len(self.data)%chunksize)+1
+        self.data=self.data+'$'*padNum
+        #pdb.set_trace()
+        self.input_data=self.createChunks(toNumLabel(self.data[:-1], self.dictionary))
+        self.labels=self.createChunks(toNumLabel(self.data[1:], self.dictionary))
+
     def __len__(self):
-        
+
         # Return the total number of data samples
         return len(self.input_data)
 
     def __getitem__(self, ind):
 
         data = self.convert_label(self.input_data[ind,:])
-
         # Convert multi-class label into binary encoding 
         #label = self.convert_label(self.labels[ind,:])
         label = torch.from_numpy(self.labels[ind,:])
         # Return the image and its label
         return (data, label)
+
+    def createChunks(self,label):
+        chunkedData=label[:self.chunkNum*self.chunksize].reshape((self.chunkNum,self.chunksize))
+        return chunkedData
 
     
 
