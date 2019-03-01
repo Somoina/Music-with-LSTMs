@@ -116,7 +116,7 @@ else: # Otherwise, train on the CPU
 train_loader, val_loader, test_loader = create_split_loaders(batch_size,shuffle=False, show_sample=False,extras=extras)
 
 # Instantiate a BasicCNN to run on the GPU or CPU based on CUDA support
-model = LSTM(in_dim=94, out_dim=94,hid_dim=100,batch_size=16,no_layers=1)
+model = LSTM(in_dim=94, out_dim=94,hid_dim=100,batch_size=1,no_layers=1)
 model = model.to(computing_device)
 print("Model on CUDA?", next(model.parameters()).is_cuda)
 
